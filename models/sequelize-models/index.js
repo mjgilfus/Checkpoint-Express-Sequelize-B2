@@ -30,11 +30,40 @@ const Owner = db.define('Owner', {
       notEmpty: true
     }
   }
-})
+});
 
-Task.belongsTo(Owner)
-Owner.hasMany(Task)
+Task.belongsTo(Owner);
+Owner.hasMany(Task);
 
+Task.clearCompleted = function () {
+  return this.destroy({ where: { complete: true } });
+};
+
+Task.completeAll = function () {
+  return this.update({ complete: true }, { where: { complete: false } });
+};
+
+Task.prototype.getTimeRemaining = function () {
+  if (!this.due) return Infinity;
+  else return this.due - new Date();
+};
+
+Task.prototype.isOverdue = function () {
+  if (this.getTimeRemaining() < 0 && !this.complete) return true;
+  else return false;
+};
+
+Task.prototype.assignOwner = function (owner) {
+  return this.setOwner(owner);
+};
+
+Owner.prototype.getIncompleteTasks = async function () {
+  const tasks = await this.getTasks();
+  const incompleteTasks = tasks.filter((task) => {
+    return !task.complete;
+  });
+  return incompleteTasks;
+};
 
 //---------^^^---------  your code above  ---------^^^----------
 
@@ -42,4 +71,3 @@ module.exports = {
   Task,
   Owner
 };
-
