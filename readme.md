@@ -1,4 +1,4 @@
-# Checkpoint - Express and Sequelize
+# [Checkpoint - Express and Sequelize](https://github.com/FullstackAcademy/Checkpoint-Express-Sequelize-B)
 
 Firstly, don't stress out that we will be using this test to judge you in any way except to understand how we can better help you.
 
