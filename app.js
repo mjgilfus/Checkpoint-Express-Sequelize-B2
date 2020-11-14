@@ -1,12 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
 module.exports = app; // this line is only used to make testing easier.
 
 // remember to plug in your router and any other middleware you may need here (i.e. body parser, mounting any router-level middleware, etc.)
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use('/users', require('./routes'));
 

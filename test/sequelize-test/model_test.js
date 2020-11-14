@@ -12,7 +12,7 @@ const { Task, Owner } = require('../../models/sequelize-models');
  *
  */
 
-describe('Task and Owner', function () {
+describe.only('Task and Owner', function () {
   // clear the database before all tests
   before(() => {
     return db.sync({ force: true });
@@ -135,9 +135,43 @@ describe('Task and Owner', function () {
     });
   });
 
+  describe('Class methods on Owner', function () {
+    let owners;
+    beforeEach(async function () {
+      owners = await Owner.bulkCreate([
+        { name: 'Natalie' },
+        { name: 'Ben' },
+        { name: 'Noelle' },
+        { name: 'Jess' },
+        { name: 'Travis' },
+      ]);
+      const [natalie, ben, noelle] = owners;
+      await Task.bulkCreate([
+        { name: 'buy groceries', OwnerId: natalie.id },
+        { name: 'invent the lambda calculus', OwnerId: natalie.id },
+        { name: 'fix that pesky linter', OwnerId: natalie.id },
+        { name: 'create a wireframe', OwnerId: ben.id },
+        { name: 'cook dinner', OwnerId: ben.id },
+        { name: 'implement OAuth', OwnerId: noelle.id },
+      ]);
+    });
+
+    describe('getOwnersAndTasks', function () {
+      /*
+        Hint: This is a good time to review eager loading
+        https://sequelize.org/master/manual/eager-loading.html
+      */
+
+      it('returns all owners and their assigned tasks', async function () {
+        const ownersAndTasks = await Owner.getOwnersAndTasks();
+        // TODO: test for eager loading tasks
+      });
+    });
+  });
+
   describe('Instance methods on Owner', function () {
     describe('getIncompleteTasks', function () {
-      it('should return all incomplete tasks assigned to an owner', async function () {
+      it('returns all incomplete tasks assigned to an owner', async function () {
         const taskData = [
           { name: 'get groceries', complete: true },
           { name: 'make dinner', complete: true },
@@ -161,6 +195,12 @@ describe('Task and Owner', function () {
 
         expect(incompleteTasks).to.have.length(2);
       });
+    });
+  });
+
+  describe('Lifecycle Hooks on Owner', function () {
+    it("we can't destroy owners named 'Grace'", async function () {
+      // TODO: Test for beforeDestroy hook, throws error when trying to destroy a user named Grace
     });
   });
 });

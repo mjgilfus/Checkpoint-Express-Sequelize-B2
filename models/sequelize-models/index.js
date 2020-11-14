@@ -55,6 +55,13 @@ Task.prototype.assignOwner = function (owner) {
   return this.setOwner(owner);
 };
 
+Owner.getOwnersAndTasks = async function() {
+  const owners = await Owner.findAll({
+    // include: [Task]
+  })
+  return owners
+};
+
 Owner.prototype.getIncompleteTasks = async function () {
   const tasks = await this.getTasks();
   const incompleteTasks = tasks.filter((task) => {
