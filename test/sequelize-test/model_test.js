@@ -141,18 +141,13 @@ describe('Task and Owner', function () {
       owners = await Owner.bulkCreate([
         { name: 'Natalie' },
         { name: 'Ben' },
-        { name: 'Noelle' },
-        { name: 'Jess' },
-        { name: 'Travis' },
+        { name: 'Orlando' },
       ]);
-      const [natalie, ben, noelle] = owners;
+      const [natalie, ben] = owners;
       await Task.bulkCreate([
         { name: 'buy groceries', OwnerId: natalie.id },
-        { name: 'invent the lambda calculus', OwnerId: natalie.id },
-        { name: 'fix that pesky linter', OwnerId: natalie.id },
-        { name: 'create a wireframe', OwnerId: ben.id },
-        { name: 'cook dinner', OwnerId: ben.id },
-        { name: 'implement OAuth', OwnerId: noelle.id },
+        { name: 'learn python', OwnerId: natalie.id },
+        { name: 'bake a cake', OwnerId: ben.id },
       ]);
     });
 
@@ -162,9 +157,21 @@ describe('Task and Owner', function () {
         https://sequelize.org/master/manual/eager-loading.html
       */
 
-      it('returns all owners and their assigned tasks', async function () {
+      it('returns all owners and includes their assigned tasks', async function () {
         const ownersAndTasks = await Owner.getOwnersAndTasks();
-        // TODO: test for eager loading tasks
+        expect(ownersAndTasks).to.have.lengthOf(3);
+        const ownersNames = ownersAndTasks.map((owner) => owner.name);
+        expect(ownersNames).to.have.members(['Natalie', 'Ben', 'Orlando']);
+        ownersAndTasks.forEach((owner) => {
+          expect(owner).to.have.property('Tasks');
+          if (owner.name === 'Natalie') {
+            const taskNames = owner.Tasks.map((task) => task.name);
+            expect(taskNames).to.have.members([
+              'buy groceries',
+              'learn python',
+            ]);
+          }
+        });
       });
     });
   });
@@ -221,21 +228,23 @@ describe('Task and Owner', function () {
       ]);
     });
 
-    it("attempting to destroy owners named 'Grace Hopper' throws an error", async function () {
-      const graceHopper = await Owner.findOne({
-        where: {
-          name: 'Grace Hopper',
-        },
+    describe('beforeDestroy Instance Hook', function () {
+      it("attempting to destroy owners named 'Grace Hopper' throws an error", async function () {
+        const graceHopper = await Owner.findOne({
+          where: {
+            name: 'Grace Hopper',
+          },
+        });
+        const alanTuring = await Owner.findOne({
+          where: {
+            name: 'Alan Turing',
+          },
+        });
+        // Destroying Alan Turing should still work.
+        await alanTuring.destroy();
+        // Destroying Grace Hopper should not work.
+        await expect(graceHopper.destroy()).to.be.rejected;
       });
-      const alanTuring = await Owner.findOne({
-        where: {
-          name: 'Alan Turing',
-        },
-      });
-      // Destroying Alan Turing should still work.
-      await alanTuring.destroy();
-      // Destroying Grace Hopper should not work.
-      await expect(graceHopper.destroy()).to.be.rejected;
     });
   });
 });

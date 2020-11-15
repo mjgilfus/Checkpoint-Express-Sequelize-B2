@@ -57,7 +57,7 @@ Task.prototype.assignOwner = function (owner) {
 
 Owner.getOwnersAndTasks = async function () {
   const owners = await Owner.findAll({
-    // include: [Task]
+    include: [{ model: Task }],
   });
   return owners;
 };
