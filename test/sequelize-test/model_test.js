@@ -12,7 +12,7 @@ const { Task, Owner } = require('../../models/sequelize-models');
  *
  */
 
-describe.only('Task and Owner', function () {
+describe('Task and Owner', function () {
   // clear the database before all tests
   before(() => {
     return db.sync({ force: true });
@@ -199,8 +199,43 @@ describe.only('Task and Owner', function () {
   });
 
   describe('Lifecycle Hooks on Owner', function () {
-    it("we can't destroy owners named 'Grace'", async function () {
-      // TODO: Test for beforeDestroy hook, throws error when trying to destroy a user named Grace
+    /*
+        Hint: This is a good time to review instance hooks:
+        https://sequelize.org/master/manual/hooks.html#instance-hooks
+
+        Note the difference between instance lifecycle hooks and model lifecycle
+        hooks.
+
+        // This would trigger the Owner.beforeBulkDestroy model hook
+        await Owner.destroy({where: {...}});
+
+        // This would trigger the Owner.beforeDestroy instance hook
+        const someOwner = await Owner.findByPk(4);
+        await someOwner.destroy();
+    */
+
+    beforeEach(async function () {
+      await Owner.bulkCreate([
+        { name: 'Grace Hopper' },
+        { name: 'Alan Turing' },
+      ]);
+    });
+
+    it("attempting to destroy owners named 'Grace Hopper' throws an error", async function () {
+      const graceHopper = await Owner.findOne({
+        where: {
+          name: 'Grace Hopper',
+        },
+      });
+      const alanTuring = await Owner.findOne({
+        where: {
+          name: 'Alan Turing',
+        },
+      });
+      // Destroying Alan Turing should still work.
+      await alanTuring.destroy();
+      // Destroying Grace Hopper should not work.
+      await expect(graceHopper.destroy()).to.be.rejected;
     });
   });
 });

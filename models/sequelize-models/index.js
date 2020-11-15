@@ -55,11 +55,11 @@ Task.prototype.assignOwner = function (owner) {
   return this.setOwner(owner);
 };
 
-Owner.getOwnersAndTasks = async function() {
+Owner.getOwnersAndTasks = async function () {
   const owners = await Owner.findAll({
     // include: [Task]
-  })
-  return owners
+  });
+  return owners;
 };
 
 Owner.prototype.getIncompleteTasks = async function () {
@@ -69,6 +69,12 @@ Owner.prototype.getIncompleteTasks = async function () {
   });
   return incompleteTasks;
 };
+
+Owner.beforeDestroy(function (owner) {
+  if (owner.name === 'Grace Hopper') {
+    throw new Error('Grace Hopper is unstoppable');
+  }
+});
 
 //---------^^^---------  your code above  ---------^^^----------
 
