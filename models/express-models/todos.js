@@ -1,5 +1,3 @@
-'use strict';
-
 let tasks = {}; //
 
 /*
@@ -43,5 +41,5 @@ module.exports = {
   remove: function (name, idx) {
     // removes a tasks
     tasks[name].splice(idx, 1);
-  }
+  },
 };
