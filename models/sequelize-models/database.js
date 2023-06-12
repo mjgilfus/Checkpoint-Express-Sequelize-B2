@@ -6,4 +6,5 @@ module.exports = new Sequelize(
   config.username,
   config.password,
   config
+  
 );

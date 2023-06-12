@@ -42,4 +42,5 @@ module.exports = {
     // removes a tasks
     tasks[name].splice(idx, 1);
   },
+  
 };
